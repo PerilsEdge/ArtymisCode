@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/rtos.hpp"
 
 // using pros::E_CONTROLLER_ANALOG_LEFT_X;
 using pros::E_CONTROLLER_ANALOG_LEFT_Y;
@@ -9,6 +10,7 @@ using pros::E_CONTROLLER_DIGITAL_L1;
 using pros::E_CONTROLLER_DIGITAL_L2;
 using pros::E_CONTROLLER_DIGITAL_A;
 using pros::E_CONTROLLER_DIGITAL_B;
+using pros::E_CONTROLLER_DIGITAL_UP;
 using pros::E_MOTOR_ENCODER_DEGREES;
 using pros::E_MOTOR_GEARSET_36;
 using pros::E_MOTOR_GEARSET_18;
@@ -37,14 +39,6 @@ pros::Controller master (pros::E_CONTROLLER_MASTER);
 
 void autonomous() {
 
-  while (true) {
-    LB.move_relative(50,100); //move down
-    Conveyer.move_relative(20,150); //moves the conveyor
-    RB.move_relative(150,100); //move up
-    RF.move_relative(10,100); //move left
-    LF.move_relative(120,100); //move right
-  }
-
 }
 
 
@@ -52,6 +46,17 @@ void opcontrol()
 {
     while (true) 
     {
+
+    //Autonomous when ^ is pressed
+    if (master.get_digital(E_CONTROLLER_DIGITAL_UP)) {
+        LB.move_relative(150,150); //move down
+        RB.move_relative(150,150); //move up
+        RF.move_relative(150,150); //move left
+        LF.move_relative(150,150); //move right
+
+        pros::delay (2);
+    }
+    
     // Y-axis control(acceleration)
     RF.move_velocity(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) * 250 / 127);
     LF.move_velocity(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) * 250 / 127);
