@@ -1,4 +1,5 @@
 #include "main.h"
+#include "pros/motors.h"
 #include "pros/rtos.hpp"
 
 // using pros::E_CONTROLLER_ANALOG_LEFT_X;
@@ -41,21 +42,28 @@ void autonomous() {
 
 }
 
-
+void resetposition() {
+  LB.tare_position();
+  LF.tare_position();
+  RB.tare_position();
+  RF.tare_position();
+  }
+int step1=0;
 void opcontrol() 
 {
+
     while (true) 
     {
-
-    //Autonomous when ^ is pressed
-    if (master.get_digital(E_CONTROLLER_DIGITAL_UP)) {
-        LB.move_relative(150,150); //move down
-        RB.move_relative(150,150); //move up
-        RF.move_relative(150,150); //move left
-        LF.move_relative(150,150); //move right
-
-        pros::delay (2);
-    }
+      //Autonomous when ^ is pressed
+      while (master.get_digital(E_CONTROLLER_DIGITAL_UP)) {
+        RB.move_velocity(-75);
+        LB.move_velocity(-75);
+        Roller.move_velocity(-75);
+        pros::delay(1000);
+        RB.move_velocity(0);
+        LB.move_velocity(0);
+        Roller.move_velocity(0);
+      }
     
     // Y-axis control(acceleration)
     RF.move_velocity(master.get_analog(E_CONTROLLER_ANALOG_LEFT_Y) * 250 / 127);
@@ -84,8 +92,10 @@ void opcontrol()
     //Roller Movement
     if (master.get_digital(E_CONTROLLER_DIGITAL_L1)) {
       Roller.move_velocity(-75);
+      //move roller up
     } else if (master.get_digital(E_CONTROLLER_DIGITAL_L2)) {
       Roller.move_velocity(75);
+      //move roller down
     } else {
       Roller.move_velocity(0);
     }
