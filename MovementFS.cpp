@@ -1,4 +1,7 @@
 #include "main.h"
+#include "pros/adi.h"
+#include "pros/adi.hpp"
+#include "pros/misc.h"
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 
@@ -33,9 +36,10 @@ pros::Motor LF(10, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 pros::Motor RF (8, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 pros::Motor LB (16, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
 pros::Motor RB (11, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
-pros::Motor Conveyor (1, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
+pros::Motor Expansion (1, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
 pros::Motor Roller (19, E_MOTOR_GEARSET_36, false, E_MOTOR_ENCODER_DEGREES);
-pros::Motor Spool ( 5, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
+pros::Motor Conveyor ( 5, E_MOTOR_GEARSET_06, true, E_MOTOR_ENCODER_DEGREES);
+
 
 pros::Controller master (pros::E_CONTROLLER_MASTER);
 
@@ -45,13 +49,13 @@ void autonomous() {
         //move back
         RB.move_velocity(-75);
         LB.move_velocity(-75);
-        pros::delay(200);
+        pros::delay(500);
         RB.move_velocity(0);
         LB.move_velocity(0);
 
         //roller upward
-        Roller.move_velocity(-95);
-        pros::delay(780);
+        Roller.move_velocity(-75);
+        pros::delay(200);
         Roller.move_velocity(0);
 /*
         //move forward
@@ -75,8 +79,8 @@ void autonomous() {
         RB.move_velocity(0);
         LB.move_velocity(0);
 
-        Conveyer.move_velocity(-200);
-    */    
+        Conveyor.move_velocity(-200);
+*/        
         yes = false;
       }
 }
@@ -102,6 +106,7 @@ void opcontrol()
       LB.move_velocity(master.get_analog(E_CONTROLLER_ANALOG_RIGHT_X) * 300 / 127);
     }
 
+/*
     // Expansion Spool
     if (master.get_digital(E_CONTROLLER_DIGITAL_R1)) {
       Spool.move_velocity(-450);
@@ -110,6 +115,7 @@ void opcontrol()
     } else {
       Spool.move_velocity(0);
     }
+*/
 
     //Roller Movement
     if (master.get_digital(E_CONTROLLER_DIGITAL_L1)) {
@@ -123,12 +129,21 @@ void opcontrol()
     }
 
     // Conveyor Movement
-    if (master.get_digital(E_CONTROLLER_DIGITAL_A)) {
+    if (master.get_digital(E_CONTROLLER_DIGITAL_R1)) {
       Conveyor.move_velocity(550);
-    } else if (master.get_digital(E_CONTROLLER_DIGITAL_B)) {
+    } else if (master.get_digital(E_CONTROLLER_DIGITAL_R2)) {
       Conveyor.move_velocity(-550);
     } else {
       Conveyor.move_velocity(0);
+    }
+
+    //Experimental Pneumatics
+    if (master.get_digital(E_CONTROLLER_DIGITAL_A)) {
+        Expansion.move_velocity(95);
+    } else if (master.get_digital(E_CONTROLLER_DIGITAL_B)) {
+        Expansion.move_velocity(-95);
+    } else {
+        Expansion.move_velocity(0);
     }
 
       pros::delay(20);
